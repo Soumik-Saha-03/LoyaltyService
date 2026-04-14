@@ -19,6 +19,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,15 +35,13 @@ class LoyaltyServiceImplTest {
     @Mock
     private RedemptionRepository redemptionRepo;
 
-    // NOTE: BookingClient is NOT injected into LoyaltyServiceImpl —
-    // it was removed since the service never uses it.
-
     @InjectMocks
     private LoyaltyServiceImpl loyaltyService;
 
     private LoyaltyAccount testAccount;
     private final Long userId = 8L;
-
+    
+    
     @BeforeEach
     void setUp() {
         testAccount = new LoyaltyAccount();
@@ -49,6 +49,8 @@ class LoyaltyServiceImplTest {
         testAccount.setPointsBalance(1000);
         testAccount.setPendingPoints(200);
         testAccount.setLastUpdated(LocalDateTime.now());
+        ReflectionTestUtils.setField(loyaltyService, "minRedemptionPoints", 300);
+        ReflectionTestUtils.setField(loyaltyService, "discountPercentage", 0.10);
     }
 
     // -------------------------------------------------------------------------

@@ -11,6 +11,8 @@ import com.cts.shbsm.repository.RedemptionRepository;
 import com.cts.shbsm.service.LoyaltyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
@@ -25,6 +27,12 @@ public class LoyaltyServiceImpl implements LoyaltyService {
 
     private final LoyaltyAccountRepository accountRepo;
     private final RedemptionRepository redemptionRepo;
+    
+    @Value("${loyalty.min.redemption.points}")
+    private int minRedemptionPoints;
+
+    @Value("${loyalty.discount.percentage}")
+    private double discountPercentage;
 
 
     @Override
@@ -161,7 +169,7 @@ public class LoyaltyServiceImpl implements LoyaltyService {
 
     public Double calculateDiscount(Double totalAmount) {
         // Flat 10% discount on total amount
-        double discountAmount = totalAmount * 0.10;
+        double discountAmount = totalAmount * discountPercentage;
         System.out.println("Discount: 10% applied | Discount Amount: " + discountAmount);
         return discountAmount;
     }
@@ -185,7 +193,7 @@ public class LoyaltyServiceImpl implements LoyaltyService {
         LoyaltyAccount account = accountRepo.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found for User: " + userId));
 
-        Integer pointsToDeduct = 300;
+        Integer pointsToDeduct = minRedemptionPoints;
 
         if (account.getPointsBalance() < pointsToDeduct) {
             log.warn("Redemption failed: User {} has {} points, requested {}", userId, account.getPointsBalance(),

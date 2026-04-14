@@ -1,5 +1,4 @@
 package com.cts.shbsm.Controller;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -9,10 +8,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import com.cts.shbsm.dto.AddPointsRequestDto;
 import com.cts.shbsm.dto.CancelPointsRequestDto;
 import com.cts.shbsm.dto.RedemptionRequestDto;
@@ -26,13 +26,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/loyalty")
 @Tag(name = "Loyalty Management", description = "Operations related to point accumulation and redemption")
+@RequiredArgsConstructor
 public class LoyaltyController {
 
     private final LoyaltyService loyaltyService;
-
-    public LoyaltyController(LoyaltyService loyaltyService) {
-        this.loyaltyService = loyaltyService;
-    }
+    
+    @Value("${loyalty.min.redemption.points}")
+    private int minRedemptionPoints;
 
     @Operation(summary = "Add Pending Points")
     @ApiResponses(value = {
